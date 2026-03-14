@@ -1,315 +1,180 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <!-- 网页编码设置，支持中文显示 -->
     <meta charset="UTF-8">
-    <!-- 让网页在手机和电脑上都能正常显示 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 网页标题，会显示在浏览器标签页上 -->
-    <title>鸿轩同学的 2026 宇宙</title>
-    
-    <!-- CSS样式区域：控制网页长什么样 -->
+    <title>像素小人：50关极限逃亡 - 游戏设计文档</title>
     <style>
-        /* ==================== 基础设置 ==================== */
-        /* * 表示选中所有元素 */
+        /* 全局重置与基础配置 */
         * {
-            margin: 0;           /* 去掉默认外边距 */
-            padding: 0;          /* 去掉默认内边距 */
-            box-sizing: border-box; /* 让尺寸计算更合理 */
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        /* 网页整体背景 */
+        :root {
+            /* 像素风核心配色 */
+            --bg-dark: #121218;
+            --bg-card: #1e1e2e;
+            --text-main: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --accent-yellow: #fbbf24;
+            --accent-red: #ef4444;
+            --accent-blue: #3b82f6;
+            --accent-purple: #8b5cf6;
+            --accent-green: #10b981;
+            --accent-orange: #f97316;
+            --border-color: #334155;
+            /* 地图原型专用配色 */
+            --map-grid-size: 18px;
+            --color-platform: #64748b;
+            --color-spike: var(--accent-red);
+            --color-fake-platform: #94a3b8;
+            --color-moving-platform: var(--accent-blue);
+            --color-button: var(--accent-purple);
+            --color-start: var(--accent-green);
+            --color-end: var(--accent-yellow);
+            --color-player: var(--text-main);
+        }
+
         body {
-            background-color: #0a0c0f;  /* 深色背景，像黑客帝国 */
-            color: #00ff88;              /* 荧光绿色文字 */
-            font-family: 'Courier New', Courier, monospace; /* 等宽字体 */
-            line-height: 1.6;            /* 行高，让文字更好读 */
-            min-height: 100vh;           /* 最小高度占满整个屏幕 */
-            display: flex;               /* 弹性布局 */
-            flex-direction: column;      /* 从上到下排列 */
-            align-items: center;         /* 内容水平居中 */
-            padding: 20px;               /* 页面边缘留白 */
-            
-            /* 科技感网格线背景效果 */
-            background-image: 
-                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;  /* 网格大小 */
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        /* ==================== 顶部标题区 ==================== */
-        header {
-            text-align: center;          /* 文字居中 */
-            margin-bottom: 30px;         /* 下方留白 */
-            padding: 30px 20px;          /* 内边距 */
-            border-bottom: 1px solid rgba(0, 255, 136, 0.3); /* 底部边框 */
-            width: 100%;
-            max-width: 800px;            /* 最大宽度 */
-        }
-
-        /* 大标题样式 */
-        h1 {
-            font-size: 2.2rem;           /* 字体大小 */
-            text-shadow: 0 0 15px rgba(0, 255, 136, 0.6); /* 发光效果 */
-            margin-bottom: 15px;         /* 下方留白 */
-            letter-spacing: 2px;         /* 字母间距 */
-        }
-
-        /* ==================== 导航栏 ==================== */
+        /* 导航栏 */
         nav {
-            margin-top: 15px;            /* 上方留白 */
-        }
-
-        /* 导航链接样式 */
-        nav a {
-            color: #00ff88;              /* 绿色文字 */
-            text-decoration: none;       /* 去掉下划线 */
-            margin: 0 15px;              /* 左右间距 */
-            padding: 8px 16px;           /* 内边距 */
-            border: 1px solid rgba(0, 255, 136, 0.4); /* 边框 */
-            transition: all 0.3s ease;   /* 动画过渡效果 */
-        }
-
-        /* 鼠标悬停时的效果 */
-        nav a:hover {
-            background-color: rgba(0, 255, 136, 0.1); /* 背景变亮 */
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.4); /* 发光 */
-        }
-
-        /* ==================== 主要内容区 ==================== */
-        main {
-            width: 100%;
-            max-width: 800px;            /* 最大宽度 */
-            padding: 20px;               /* 内边距 */
-        }
-
-        /* ==================== 卡片样式（老式电脑弹窗风格）==================== */
-        .card {
-            background-color: rgba(16, 20, 25, 0.9); /* 半透明深色背景 */
-            border: 2px solid #00ff88;   /* 绿色边框 */
-            border-radius: 8px;          /* 圆角 */
-            padding: 25px;               /* 内边距 */
-            margin-bottom: 25px;         /* 下方间距 */
-            
-            /* 老式电脑的光影效果 */
-            box-shadow: 
-                0 0 20px rgba(0, 255, 136, 0.2),      /* 外发光 */
-                inset 0 0 30px rgba(0, 255, 136, 0.05); /* 内发光 */
-            position: relative;          /* 相对定位 */
-        }
-
-        /* 卡片标题 */
-        .card h2 {
-            font-size: 1.3rem;           /* 字体大小 */
-            margin-bottom: 15px;         /* 下方留白 */
-            padding-bottom: 10px;        /* 下方内边距 */
-            border-bottom: 1px dashed rgba(0, 255, 136, 0.4); /* 虚线边框 */
-        }
-
-        /* ==================== 个人介绍卡片 ==================== */
-        .intro-text {
-            font-size: 1.1rem;           /* 字体稍大 */
-            line-height: 1.8;            /* 行高 */
-        }
-
-        /* ==================== 分享链接列表 ==================== */
-        .link-list {
-            list-style: none;            /* 去掉列表默认样式 */
-        }
-
-        .link-list li {
-            margin: 12px 0;              /* 上下间距 */
-        }
-
-        .link-list a {
-            color: #ffffff;              /* 白色文字 */
-            text-decoration: none;       /* 去掉下划线 */
-            padding: 10px 15px;          /* 内边距 */
-            display: inline-block;       /* 行内块元素 */
-            border: 1px solid rgba(255, 255, 255, 0.3); /* 边框 */
-            transition: all 0.3s ease;   /* 动画 */
-        }
-
-        /* 链接悬停效果 */
-        .link-list a:hover {
-            background-color: rgba(0, 255, 136, 0.2);
-            border-color: #00ff88;
-            transform: translateX(5px);  /* 向右移动 */
-        }
-
-        /* ==================== 命令行动态区域 ==================== */
-        .terminal {
-            background-color: #050608;   /* 更深的背景 */
-            border: 2px solid #00ff88;   /* 绿色边框 */
-            border-radius: 5px;          /* 圆角 */
-            padding: 20px;               /* 内边距 */
-            font-size: 0.95rem;          /* 字体大小 */
-        }
-
-        /* 命令行每一行 */
-        .terminal-line {
-            margin: 8px 0;               /* 上下间距 */
-            display: flex;               /* 弹性布局 */
-            align-items: center;         /* 垂直居中 */
-        }
-
-        /* 命令行提示符 > */
-        .prompt {
-            color: #00ff88;              /* 绿色 */
-            margin-right: 10px;          /* 右边距 */
-            font-weight: bold;           /* 加粗 */
-        }
-
-        /* 命令行文字 */
-        .command {
-            color: #ffffff;              /* 白色 */
-        }
-
-        /* 状态标记 [OK] */
-        .status {
-            color: #00ff88;              /* 绿色 */
-            margin-left: 10px;           /* 左边距 */
-        }
-
-        /* ==================== 闪烁光标动画 ==================== */
-        .cursor {
-            display: inline-block;       /* 行内块 */
-            width: 10px;                 /* 宽度 */
-            height: 18px;                /* 高度 */
-            background-color: #00ff88;   /* 绿色背景 */
-            animation: blink 1s infinite; /* 动画：闪烁 */
-            vertical-align: middle;      /* 垂直对齐 */
-        }
-
-        /* 定义闪烁动画 */
-        @keyframes blink {
-            0%, 50% { opacity: 1; }      /* 显示 */
-            51%, 100% { opacity: 0; }    /* 隐藏 */
-        }
-
-        /* ==================== 页脚 ==================== */
-        footer {
-            margin-top: auto;            /* 推到底部 */
-            padding: 30px 20px;          /* 内边距 */
-            text-align: center;          /* 文字居中 */
-            border-top: 1px solid rgba(0, 255, 136, 0.3); /* 顶部边框 */
-            width: 100%;
-            max-width: 800px;            /* 最大宽度 */
-        }
-
-        .footer-text {
-            color: rgba(0, 255, 136, 0.6); /* 半透明绿色 */
-            font-size: 0.9rem;           /* 字体大小 */
-        }
-
-        /* ==================== 响应式设计（手机适配）==================== */
-        @media (max-width: 600px) {
-            h1 { font-size: 1.5rem; }    /* 小屏幕标题变小 */
-            nav a { 
-                display: block;          /* 导航变成块级 */
-                margin: 10px 0;          /* 调整间距 */
-                text-align: center;      /* 文字居中 */
-            }
-            .card { padding: 15px; }     /* 卡片内边距变小 */
-        }
-
-        /* ==================== 扫描线效果（老式显示器）==================== */
-        .scanline {
-            position: fixed;             /* 固定定位 */
+            position: sticky;
             top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                to bottom,
-                transparent 50%,
-                rgba(0, 255, 136, 0.02) 51%
-            );
-            background-size: 100% 4px;   /* 扫描线间距 */
-            pointer-events: none;        /* 不影响点击 */
-            z-index: 9999;               /* 在最上层 */
+            background-color: rgba(18, 18, 24, 0.95);
+            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            z-index: 999;
+            backdrop-filter: blur(4px);
         }
-    </style>
-</head>
 
-<body>
-    <!-- 扫描线效果层（老式显示器感觉） -->
-    <div class="scanline"></div>
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem 2rem;
+            justify-content: center;
+        }
 
-    <!-- 顶部区域 -->
-    <header>
-        <h1>🚀 鸿轩同学的 2026 宇宙</h1>
-        <!-- 导航栏：中括号形式的链接 -->
-        <nav>
-            <a href="#">[主页]</a>
-            <a href="#">[作品]</a>
-            <a href="#">[关于]</a>
-            <a href="#">[联系]</a>
-        </nav>
-    </header>
+        .nav-container a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+            white-space: nowrap;
+        }
 
-    <!-- 主要内容区 -->
-    <main>
-        <!-- 个人介绍卡片 -->
-        <div class="card">
-            <h2>👤 个人介绍</h2>
-            <p class="intro-text">
-                你好！我是鸿轩，今年<span style="color: #ffffff;">13岁</span>。
-                <br><br>
-                💻 喜欢编程和机器人<br>
-                🤖 正在学习AI和机器学习<br>
-                🌟 梦想是创造改变世界的技术<br>
-                📚 相信代码可以改变未来
-            </p>
-        </div>
+        .nav-container a:hover {
+            color: var(--accent-yellow);
+        }
 
-        <!-- 我的分享卡片 -->
-        <div class="card">
-            <h2>🔗 我的分享</h2>
-            <ul class="link-list">
-                <li><a href="https://space.bilibili.com" target="_blank">📺 我的B站空间</a></li>
-                <li><a href="https://github.com" target="_blank">💻 GitHub</a></li>
-                <li><a href="https://notion.so" target="_blank">📝 Notion</a></li>
-                <li><a href="https://google.com" target="_blank">🔍 Google</a></li>
-            </ul>
-        </div>
+        /* 通用容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+        }
 
-        <!-- 近期动态（命令行风格） -->
-        <div class="card">
-            <h2>💻 近期动态</h2>
-            <div class="terminal">
-                <div class="terminal-line">
-                    <span class="prompt">></span>
-                    <span class="command">正在学习HTML...</span>
-                    <span class="status">[OK]</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="prompt">></span>
-                    <span class="command">正在学习CSS...</span>
-                    <span class="status">[OK]</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="prompt">></span>
-                    <span class="command">正在学习JavaScript...</span>
-                    <span class="status">[IN_PROGRESS]</span>
-                </div>
-                <div class="terminal-line">
-                    <span class="prompt">></span>
-                    <span class="command">构建个人网站...</span>
-                    <span class="cursor"></span>
-                </div>
-            </div>
-        </div>
-    </main>
+        /* 标题通用样式 */
+        h1 {
+            font-size: 2.5rem;
+            color: var(--accent-yellow);
+            text-align: center;
+            margin-bottom: 1rem;
+            letter-spacing: 2px;
+        }
 
-    <!-- 页脚 -->
-    <footer>
-        <p class="footer-text">
-            © 2026 鸿轩同学 ⚡ 来自地球
-        </p>
-        <p class="footer-text" style="margin-top: 10px; font-size: 0.8rem;">
-            Made with 💚 and Code
-        </p>
-    </footer>
-</body>
-</html>
+        h2 {
+            font-size: 1.8rem;
+            color: var(--accent-yellow);
+            margin: 3rem 0 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h3 {
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem;
+        }
+
+        h4 {
+            font-size: 1.1rem;
+            margin: 1rem 0 0.8rem;
+            color: var(--text-main);
+        }
+
+        /* Hero区域 */
+        .hero {
+            text-align: center;
+            padding: 6rem 2rem;
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 800px;
+            margin: 0 auto 2rem;
+        }
+
+        .pixel-character-show {
+            display: flex;
+            gap: 4rem;
+            justify-content: center;
+            align-items: end;
+            margin: 3rem 0;
+            flex-wrap: wrap;
+        }
+
+        /* CSS像素小人 */
+        .pixel-single {
+            width: 40px;
+            height: 40px;
+            background-color: var(--text-main);
+            border: 2px solid var(--border-color);
+        }
+
+        .pixel-human {
+            display: grid;
+            grid-template-columns: repeat(3, 20px);
+            grid-template-rows: repeat(3, 20px);
+            gap: 2px;
+        }
+        .pixel-human div {
+            background-color: var(--text-main);
+            border: 1px solid var(--border-color);
+        }
+        .pixel-head { grid-column: 2 / 3; grid-row: 1 / 2; }
+        .pixel-body { grid-column: 2 / 3; grid-row: 2 / 3; }
+        .pixel-left-hand { grid-column: 1 / 2; grid-row: 2 / 3; }
+        .pixel-right-hand { grid-column: 3 / 4; grid-row: 2 / 3; }
+        .pixel-foot { grid-column: 2 / 3; grid-row: 3 / 4; }
+
+        /* 卡片通用样式 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 1.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
