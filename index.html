@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>像素小人：50关极限逃亡 - 游戏设计文档</title>
+    <title>像素小人：50关极限逃亡 - 原型图稿与核心介绍</title>
     <style>
-        /* 全局重置与基础配置 */
+        /* ===== 全局重置与像素风变量 ===== */
         * {
             margin: 0;
             padding: 0;
@@ -16,6 +16,7 @@
             /* 像素风核心配色 */
             --bg-dark: #121218;
             --bg-card: #1e1e2e;
+            --bg-panel: #252536;
             --text-main: #e2e8f0;
             --text-secondary: #94a3b8;
             --accent-yellow: #fbbf24;
@@ -25,16 +26,7 @@
             --accent-green: #10b981;
             --accent-orange: #f97316;
             --border-color: #334155;
-            /* 地图原型专用配色 */
-            --map-grid-size: 18px;
-            --color-platform: #64748b;
-            --color-spike: var(--accent-red);
-            --color-fake-platform: #94a3b8;
-            --color-moving-platform: var(--accent-blue);
-            --color-button: var(--accent-purple);
-            --color-start: var(--accent-green);
-            --color-end: var(--accent-yellow);
-            --color-player: var(--text-main);
+            --glow-color: rgba(251, 191, 36, 0.3);
         }
 
         body {
@@ -42,7 +34,9 @@
             background-color: var(--bg-dark);
             color: var(--text-main);
             line-height: 1.6;
-            overflow-x: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         /* 导航栏 */
@@ -82,16 +76,18 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 4rem 2rem;
+            padding: 2rem 2rem 4rem;
+            flex: 1;
         }
 
-        /* 标题通用样式 */
+        /* 标题 */
         h1 {
             font-size: 2.5rem;
             color: var(--accent-yellow);
             text-align: center;
             margin-bottom: 1rem;
             letter-spacing: 2px;
+            text-shadow: 0 0 8px var(--glow-color);
         }
 
         h2 {
@@ -100,11 +96,19 @@
             margin: 3rem 0 1.5rem;
             padding-bottom: 0.5rem;
             border-bottom: 2px solid var(--border-color);
+            position: relative;
+        }
+        h2::after {
+            content: "⚡";
+            position: absolute;
+            right: 0;
+            color: var(--accent-yellow);
         }
 
         h3 {
             font-size: 1.3rem;
             margin: 1.5rem 0 1rem;
+            color: var(--accent-blue);
         }
 
         h4 {
@@ -116,7 +120,7 @@
         /* Hero区域 */
         .hero {
             text-align: center;
-            padding: 6rem 2rem;
+            padding: 4rem 2rem 2rem;
         }
 
         .hero-subtitle {
@@ -126,28 +130,24 @@
             margin: 0 auto 2rem;
         }
 
+        /* 像素小人展示 */
         .pixel-character-show {
             display: flex;
-            gap: 4rem;
+            gap: 3rem;
             justify-content: center;
-            align-items: end;
+            align-items: flex-end;
             margin: 3rem 0;
             flex-wrap: wrap;
         }
 
-        /* CSS像素小人 */
-        .pixel-single {
-            width: 40px;
-            height: 40px;
-            background-color: var(--text-main);
-            border: 2px solid var(--border-color);
-        }
-
         .pixel-human {
             display: grid;
-            grid-template-columns: repeat(3, 20px);
-            grid-template-rows: repeat(3, 20px);
+            grid-template-columns: repeat(3, 24px);
+            grid-template-rows: repeat(3, 24px);
             gap: 2px;
+            background-color: var(--bg-panel);
+            padding: 8px;
+            border: 2px solid var(--border-color);
         }
         .pixel-human div {
             background-color: var(--text-main);
@@ -159,22 +159,504 @@
         .pixel-right-hand { grid-column: 3 / 4; grid-row: 2 / 3; }
         .pixel-foot { grid-column: 2 / 3; grid-row: 3 / 4; }
 
-        /* 卡片通用样式 */
+        /* 卡片网格 */
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.8rem;
             margin: 2rem 0;
         }
 
         .card {
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
-            border-radius: 4px;
+            border-radius: 8px;
             padding: 1.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
         }
 
         .card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-yellow);
+            box-shadow: 0 8px 16px rgba(251, 191, 36, 0.2);
+        }
+
+        /* ===== 新增：原型图设计样式 ===== */
+        .prototype-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            margin: 2rem 0;
+        }
+
+        .proto-card {
+            background-color: var(--bg-panel);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .proto-title {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            color: var(--accent-yellow);
+        }
+        .proto-title span {
+            font-size: 2rem;
+        }
+
+        .proto-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+
+        .proto-item {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 1.2rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .proto-item h4 {
+            color: var(--accent-green);
+            margin-bottom: 0.8rem;
+        }
+
+        /* 像素地图画板 */
+        .pixel-canvas {
+            display: inline-grid;
+            grid-template-columns: repeat(12, 20px);
+            grid-template-rows: repeat(8, 20px);
+            gap: 2px;
+            background-color: #0f0f1a;
+            padding: 12px;
+            border: 3px solid var(--border-color);
+            margin: 0.5rem 0;
+        }
+        .pixel-canvas div {
+            background-color: #2d2d44;
+            border: 1px solid #1e1e30;
+        }
+        /* 图块类型 */
+        .tile-start { background-color: var(--accent-green) !important; }
+        .tile-end { background-color: var(--accent-yellow) !important; }
+        .tile-spike { background-color: var(--accent-red) !important; }
+        .tile-platform { background-color: var(--color-platform, #64748b) !important; }
+        .tile-fake { background-color: #94a3b8 !important; opacity: 0.7; }
+        .tile-moving { background-color: var(--accent-blue) !important; }
+        .tile-button { background-color: var(--accent-purple) !important; }
+        .tile-player { background-color: white !important; box-shadow: 0 0 6px white; }
+
+        /* 核心机制示意图 */
+        .mech-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .mech-item {
+            flex: 1 1 200px;
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            text-align: center;
+        }
+        .mech-icon {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 0 6px currentColor);
+        }
+
+        /* 难度曲线图 (纯CSS模拟) */
+        .difficulty-chart {
+            background: var(--bg-card);
+            padding: 2rem;
+            border-radius: 16px;
+            margin: 2rem 0;
+            border: 1px solid var(--border-color);
+        }
+        .chart-container {
+            display: flex;
+            align-items: flex-end;
+            height: 200px;
+            gap: 6px;
+            margin-top: 1.5rem;
+        }
+        .chart-bar {
+            flex: 1;
+            background: linear-gradient(to top, var(--accent-red), var(--accent-yellow));
+            height: calc(70% + 10px);
+            min-height: 20px;
+            border-radius: 4px 4px 0 0;
+            position: relative;
+            transition: height 0.3s;
+        }
+        .chart-bar:nth-child(1) { height: 20%; }
+        .chart-bar:nth-child(2) { height: 28%; }
+        .chart-bar:nth-child(3) { height: 35%; }
+        .chart-bar:nth-child(4) { height: 45%; }
+        .chart-bar:nth-child(5) { height: 58%; }
+        .chart-bar:nth-child(6) { height: 70%; }
+        .chart-bar:nth-child(7) { height: 82%; }
+        .chart-bar:nth-child(8) { height: 95%; }
+        .chart-bar:nth-child(9) { height: 100%; }
+        .chart-bar:nth-child(10) { height: 98%; }
+        .chart-bar::after {
+            content: attr(data-level);
+            position: absolute;
+            top: -24px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            white-space: nowrap;
+        }
+
+        /* 图例样式 */
+        .legend-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.8rem;
+            margin: 1.5rem 0;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        .color-box {
+            width: 28px;
+            height: 28px;
+            border: 2px solid var(--border-color);
+            background-color: currentColor;
+            border-radius: 4px;
+        }
+        .color-box.platform { background-color: #64748b; }
+        .color-box.spike { background-color: var(--accent-red); }
+        .color-box.fake { background-color: #94a3b8; }
+        .color-box.moving { background-color: var(--accent-blue); }
+        .color-box.button { background-color: var(--accent-purple); }
+        .color-box.start { background-color: var(--accent-green); }
+        .color-box.end { background-color: var(--accent-yellow); }
+
+        /* 关卡表格增强 */
+        .level-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+        .level-table th {
+            background-color: #2d2d3f;
+            color: var(--accent-yellow);
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+        }
+        .level-table td {
+            padding: 0.8rem;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+        }
+        .level-table tr:hover td {
+            background-color: #2a2a3a;
+            color: white;
+        }
+
+        /* 页脚 */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            border-top: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            margin-top: 2rem;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--accent-purple);
+            color: black;
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.8rem;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="#overview">⚡概览</a>
+            <a href="#prototype-design">🗺️原型图稿</a>
+            <a href="#core-mechanic-viz">📊核心介绍</a>
+            <a href="#level-blueprint">📐关卡蓝图</a>
+            <a href="#map-elements">🧩图块百科</a>
+        </div>
+    </nav>
+
+    <section class="hero" id="overview">
+        <h1>🧱 像素小人 · 50关极限逃亡 🧱</h1>
+        <div class="hero-subtitle">
+            —— 原型图稿大放送 | 核心机制视觉化 | 五十层地狱设计手稿 ——
+        </div>
+        <div class="pixel-character-show">
+            <div class="pixel-human">
+                <div class="pixel-head"></div>
+                <div class="pixel-left-hand"></div>
+                <div class="pixel-body"></div>
+                <div class="pixel-right-hand"></div>
+                <div class="pixel-foot"></div>
+            </div>
+            <div style="display: flex; gap: 15px;">
+                <div style="width: 40px; height: 40px; background: var(--accent-red); border: 3px solid var(--border-color);"></div>
+                <div style="width: 40px; height: 40px; background: var(--accent-blue); border: 3px solid var(--border-color);"></div>
+                <div style="width: 40px; height: 40px; background: var(--accent-green); border: 3px solid var(--border-color);"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <!-- ========== 原型图设计区（重点扩充） ========= -->
+        <section id="prototype-design">
+            <h2> 🖌️ 多张原型设计图稿</h2>
+            <div class="prototype-gallery">
+
+                <!-- 图稿1：地图编辑器草图 -->
+                <div class="proto-card">
+                    <div class="proto-title">
+                        <span>🗺️</span> 图稿 A：关卡编辑器布局手稿
+                    </div>
+                    <div class="proto-grid">
+                        <div class="proto-item">
+                            <h4>第一关 简单跳跃</h4>
+                            <div class="pixel-canvas">
+                                <div class="tile-start"></div><div></div><div></div><div></div><div class="tile-platform"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                                <div></div><div class="tile-platform"></div><div></div><div></div><div></div><div class="tile-spike"></div><div></div><div></div><div></div><div class="tile-platform"></div><div></div><div></div>
+                                <div></div><div></div><div></div><div class="tile-platform"></div><div></div><div></div><div class="tile-button"></div><div></div><div></div><div></div><div></div><div></div>
+                                <div></div><div class="tile-spike"></div><div></div><div></div><div></div><div class="tile-platform"></div><div></div><div></div><div></div><div></div><div class="tile-end"></div><div></div>
+                                <div></div><div></div><div class="tile-player"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div class="tile-platform"></div><div></div><div></div><div></div><div></div>
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                                <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                            </div>
+                            <p style="color:var(--text-secondary);">⬆️ 起点(绿) · 尖刺(红) · 按钮(紫) · 终点(黄) · 玩家(白)</p>
+                        </div>
+                        <div class="proto-item">
+                            <h4>第13关 假平台迷宫</h4>
+                            <div class="pixel-canvas">
+                                <div class="tile-start"></div><div></div><div class="tile-fake"></div><div></div><div></div><div class="tile-fake"></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                                <div></div><div class="tile-platform"></div><div></div><div class="tile-fake"></div><div></div><div></div><div class="tile-spike"></div><div></div><div></div><div></div><div></div><div></div>
+                                <div></div><div></div><div class="tile-fake"></div><div></div><div class="tile-platform"></div><div></div><div></div><div class="tile-fake"></div><div></div><div></div><div></div><div class="tile-end"></div>
+                                <div></div><div class="tile-spike"></div><div></div><div class="tile-platform"></div><div></div><div class="tile-fake"></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                                <div></div><div></div><div></div><div></div><div class="tile-player"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+                            </div>
+                            <p style="color:var(--text-secondary);">半透明方块 = 假平台 (踩中碎裂)</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图稿2：移动机关时序设计 -->
+                <div class="proto-card">
+                    <div class="proto-title">
+                        <span>⏱️</span> 图稿 B：移动平台 & 时序机关原型
+                    </div>
+                    <div class="mech-showcase">
+                        <div class="mech-item">
+                            <div class="mech-icon">🔄</div>
+                            <h4>水平往复</h4>
+                            <div style="display:flex; gap:4px; justify-content:center; margin:10px 0;">
+                                <div style="width:15px;height:15px;background:var(--accent-blue);"></div>
+                                <div style="width:15px;height:15px;background:gray;"></div>
+                                <div style="width:15px;height:15px;background:gray;"></div>
+                                <div style="width:15px;height:15px;background:var(--accent-blue);"></div>
+                            </div>
+                            <p>左-右-左 周期2.5秒</p>
+                        </div>
+                        <div class="mech-item">
+                            <div class="mech-icon">⬆️⬇️</div>
+                            <h4>升降平台</h4>
+                            <div style="display:flex; flex-direction:column; align-items:center; gap:4px; margin:10px 0;">
+                                <div style="width:15px;height:15px;background:var(--accent-blue);"></div>
+                                <div style="width:15px;height:15px;background:gray;"></div>
+                                <div style="width:15px;height:15px;background:var(--accent-blue);"></div>
+                            </div>
+                            <p>只在尖刺上方移动</p>
+                        </div>
+                        <div class="mech-item">
+                            <div class="mech-icon">⏲️</div>
+                            <h4>按钮时序</h4>
+                            <div style="display:flex; gap:6px; justify-content:center;">
+                                <span style="color:var(--accent-purple)">🔘</span> → <span style="color:var(--accent-green)">⏳3s</span> → <span style="color:var(--accent-yellow)">🚪</span>
+                            </div>
+                            <p>按住0.5秒开启, 松开2秒后关闭</p>
+                        </div>
+                    </div>
+                    <p style="text-align:right; color:var(--text-secondary);">* 时序图基于像素帧数据(12fps)设计</p>
+                </div>
+
+                <!-- 图稿3：尖刺阵列 & 陷阱变体 -->
+                <div class="proto-card">
+                    <div class="proto-title">
+                        <span>⚠️</span> 图稿 C：尖刺陷阱大全 (6种原型)
+                    </div>
+                    <div class="proto-grid">
+                        <div class="proto-item">🔻 固定尖刺 (即死)</div>
+                        <div class="proto-item">🔺 伸缩刺 (1秒弹出/1秒收回)</div>
+                        <div class="proto-item">🌀 旋转尖刺 (围绕平台)</div>
+                        <div class="proto-item">💥 地刺机关 (按钮触发)</div>
+                        <div class="proto-item">⬆️ 上升尖刺 (从地面突出)</div>
+                        <div class="proto-item">👻 伪装尖刺 (与平台同色)</div>
+                    </div>
+                    <div style="display:flex; gap:20px; justify-content:center; margin:1rem 0;">
+                        <div style="width:50px; height:50px; background: repeating-linear-gradient(45deg, var(--accent-red) 0px, var(--accent-red) 8px, #000 8px, #000 16px); border:2px solid gray;"></div>
+                        <div style="width:50px; height:50px; background: repeating-linear-gradient(135deg, var(--accent-orange) 0px, var(--accent-orange) 8px, #300 8px, #300 16px); border:2px solid gray;"></div>
+                        <div style="width:50px; height:50px; background: radial-gradient(circle at 30% 30%, var(--accent-red) 4px, #500 8px); border:2px solid gray;"></div>
+                    </div>
+                </div>
+
+                <!-- 图稿4：BOSS战原型 sketch -->
+                <div class="proto-card">
+                    <div class="proto-title">
+                        <span>👾</span> 图稿 D：像素法师BOSS战 第10关/30关/50关
+                    </div>
+                    <div class="proto-grid">
+                        <div class="proto-item"><span class="badge">10F</span> 法师分身 + 幻影平台</div>
+                        <div class="proto-item"><span class="badge">30F</span> 尖刺弹幕 + 反转方向</div>
+                        <div class="proto-item"><span class="badge">50F</span> 巨大化法师 + 全屏干扰</div>
+                    </div>
+                    <div style="display:flex; gap:15px; justify-content:center; margin:1rem 0;">
+                        <div style="width:60px; height:80px; background: var(--bg-card); border:3px solid var(--accent-purple); position:relative;">
+                            <div style="width:20px;height:20px;background:var(--accent-purple); position:absolute; top:10px; left:20px;"></div>
+                        </div>
+                        <div style="width:60px; height:80px; background: var(--bg-card); border:3px solid var(--accent-red);"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== 核心介绍图 (可视化数据) ========= -->
+        <section id="core-mechanic-viz">
+            <h2>📈 核心机制 · 视觉化介绍</h2>
+            <div class="card-grid">
+                <div class="card">
+                    <h4>🔹 二段跳 & 蹬墙跳</h4>
+                    <div style="display: flex; gap: 10px; font-size: 2rem;">⬆️⬆️  ↯  ⬅️⬆️</div>
+                    <p>空中可再次跳跃，接触墙壁时反向弹跳。90%关卡需要此技巧。</p>
+                    <div style="height: 40px; background: linear-gradient(90deg, var(--accent-green) 30%, var(--accent-blue) 70%);"></div>
+                </div>
+                <div class="card">
+                    <h4>🔹 假平台识别</h4>
+                    <p>真: 实心 | 假: 半透明闪烁 (周期0.6s)</p>
+                    <div style="display: flex; gap: 12px;">
+                        <div style="width: 40px; height: 20px; background: #64748b;"></div>
+                        <div style="width: 40px; height: 20px; background: #94a3b8; opacity: 0.5; animation: pulse 1s infinite;"></div>
+                    </div>
+                    <style>@keyframes pulse { 0%{opacity:0.3;} 50%{opacity:0.8;} }</style>
+                </div>
+                <div class="card">
+                    <h4>🔹 机关连锁示意图</h4>
+                    <div style="display:flex; justify-content:space-around;">
+                        <span>🔘A</span> <span style="color:var(--text-secondary)">→</span> <span>🚪1</span><br>
+                        <span>🔘B+🔘C</span> <span>→</span> <span>🚪2</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 难度曲线图（核心介绍） -->
+            <div class="difficulty-chart">
+                <h3>📊 50关难度梯度曲线 (原型数据)</h3>
+                <div class="chart-container">
+                    <div class="chart-bar" data-level="1-5"></div>
+                    <div class="chart-bar" data-level="6-10"></div>
+                    <div class="chart-bar" data-level="11-15"></div>
+                    <div class="chart-bar" data-level="16-20"></div>
+                    <div class="chart-bar" data-level="21-25"></div>
+                    <div class="chart-bar" data-level="26-30"></div>
+                    <div class="chart-bar" data-level="31-35"></div>
+                    <div class="chart-bar" data-level="36-40"></div>
+                    <div class="chart-bar" data-level="41-45"></div>
+                    <div class="chart-bar" data-level="46-50"></div>
+                </div>
+                <p style="margin-top: 2rem; color: var(--text-secondary);">横轴每5关为一组，纵轴表示操作密度/陷阱数量。第41-45达到顶峰，第46-50因为熟练度稍微回落但加入新机制。</p>
+            </div>
+
+            <!-- 核心机制占比 -->
+            <div style="background: var(--bg-card); padding: 2rem; border-radius: 16px; margin: 2rem 0;">
+                <h3>🧩 机制出现频率 (所有关卡统计)</h3>
+                <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: center;">
+                    <div style="flex:1; min-width:200px;">
+                        <div>尖刺陷阱 <span style="float:right;">92%</span></div><progress value="92" max="100" style="width:100%; height:20px;"></progress>
+                        <div>移动平台 <span style="float:right;">64%</span></div><progress value="64" max="100" style="width:100%;"></progress>
+                        <div>假平台 <span style="float:right;">56%</span></div><progress value="56" max="100"></progress>
+                        <div>按钮机关 <span style="float:right;">48%</span></div><progress value="48" max="100"></progress>
+                        <div>强制蹬墙 <span style="float:right;">38%</span></div><progress value="38" max="100"></progress>
+                    </div>
+                    <div style="flex:1; text-align: center;">
+                        <div style="width:120px; height:120px; border-radius:50%; background: conic-gradient(var(--accent-red) 0deg 331deg, var(--accent-blue) 331deg 360deg); margin:0 auto;"></div>
+                        <p>尖刺占比92% (几乎每关都有)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========== 关卡蓝图 & 图块百科 ========= -->
+        <section id="level-blueprint">
+            <h2>📐 精选关卡蓝图 (原型草图)</h2>
+            <div class="proto-grid">
+                <div class="proto-item">
+                    <h4>🌱 第3关 - 二段跳练习</h4>
+                    <div style="display:flex; gap:2px; flex-wrap:wrap; width:140px; margin:0 auto;">
+                        <div style="width:20px;height:20px;background:green;"></div><div style="width:20px;height:20px;"></div><div style="width:20px;height:20px;background:#64748b;"></div><div style="width:20px;height:20px;"></div><div style="width:20px;height:20px;background:red;"></div><div style="width:20px;height:20px;background:yellow;"></div>
+                    </div>
+                </div>
+                <div class="proto-item">
+                    <h4>🌀 第19关 - 移动迷宫</h4>
+                    <div style="display:flex; gap:2px; flex-wrap:wrap; width:140px;">
+                        <div style="width:20px;height:20px;background:green;"></div><div style="width:20px;height:20px;background:blue;"></div><div style="width:20px;height:20px;"></div><div style="width:20px;height:20px;background:purple;"></div><div style="width:20px;height:20px;background:yellow;"></div>
+                    </div>
+                </div>
+                <div class="proto-item">
+                    <h4>⚡ 第37关 - 四按钮连锁</h4>
+                    <div style="font-family: monospace;">🔘 🔘<br> 🚪 <br> 🔘 🔘</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="map-elements">
+            <h2>🧩 图块百科 & 设计配色</h2>
+            <div class="legend-grid">
+                <div class="legend-item"><span class="color-box platform"></span> 普通平台 (#64748b)</div>
+                <div class="legend-item"><span class="color-box spike"></span> 尖刺 (即死)</div>
+                <div class="legend-item"><span class="color-box fake"></span> 假平台 (半透明)</div>
+                <div class="legend-item"><span class="color-box moving"></span> 移动平台 (蓝)</div>
+                <div class="legend-item"><span class="color-box button"></span> 按钮/开关 (紫)</div>
+                <div class="legend-item"><span class="color-box start"></span> 起点 (绿)</div>
+                <div class="legend-item"><span class="color-box end"></span> 终点 (金)</div>
+            </div>
+        </section>
+
+        <!-- 关卡表格速览 -->
+        <section>
+            <h2>📋 50关 核心参数表 (节选)</h2>
+            <table class="level-table">
+                <thead><tr><th>关卡</th><th>名称</th><th>新增元素</th><th>挑战目标</th></tr></thead>
+                <tbody>
+                    <tr><td>1</td><td>出发</td><td>无</td><td>到达终点</td></tr>
+                    <tr><td>5</td><td>摇摆</td><td>第一个移动平台</td><td>30秒内通关</td></tr>
+                    <tr><td>13</td><td>幻影走廊</td><td>假平台群</td><td>无伤通过</td></tr>
+                    <tr><td>21</td><td>蹬墙训练营</td><td>强制蹬墙跳</td><td>收集隐藏硬币</td></tr>
+                    <tr><td>33</td><td>四色按钮</td><td>多开关连锁</td><td>按正确顺序</td></tr>
+                    <tr><td>42</td><td>尖刺地狱</td><td>伸缩尖刺+移动</td><td>死亡<10次</td></tr>
+                    <tr><td>50</td><td>最终审判</
